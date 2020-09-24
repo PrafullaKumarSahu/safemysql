@@ -69,12 +69,12 @@
 class SafeMySQL
 {
 
-	private $conn;
-	private $stats;
-	private $emode;
-	private $exname;
+	protected $conn;
+	protected $stats;
+	protected $emode;
+	protected $exname;
 
-	private $defaults = array(
+	protected $defaults = array(
 		'host'      => 'localhost',
 		'user'      => 'root',
 		'pass'      => '',
@@ -221,7 +221,7 @@ class SafeMySQL
 	 * 
 	 * Examples:
 	 * $data = $db->getRow("SELECT * FROM table WHERE id=1");
-	 * $data = $db->getOne("SELECT * FROM table WHERE id=?i", $id);
+	 * $data = $db->getRow("SELECT * FROM table WHERE id=?i", $id);
 	 *
 	 * @param string $query - an SQL query with placeholders
 	 * @param mixed  $arg,... unlimited number of arguments to match placeholders in the query
@@ -247,7 +247,7 @@ class SafeMySQL
 	 *
 	 * @param string $query - an SQL query with placeholders
 	 * @param mixed  $arg,... unlimited number of arguments to match placeholders in the query
-	 * @return array|FALSE either enumerated array of first fields of all rows of resultset or FALSE if none found
+	 * @return array enumerated array of first fields of all rows of resultset or empty array if none found
 	 */
 	public function getCol()
 	{
@@ -454,13 +454,13 @@ class SafeMySQL
 	}
 
 	/**
-	 * private function which actually runs a query against Mysql server.
+	 * protected function which actually runs a query against Mysql server.
 	 * also logs some stats like profiling info and error message
 	 * 
 	 * @param string $query - a regular SQL query
 	 * @return mysqli result resource or FALSE on error
 	 */
-	private function rawQuery($query)
+	protected function rawQuery($query)
 	{
 		$start = microtime(TRUE);
 		$res   = mysqli_query($this->conn, $query);
@@ -486,7 +486,7 @@ class SafeMySQL
 		return $res;
 	}
 
-	private function prepareQuery($args)
+	protected function prepareQuery($args)
 	{
 		$query = '';
 		$raw   = array_shift($args);
@@ -533,7 +533,7 @@ class SafeMySQL
 		return $query;
 	}
 
-	private function escapeInt($value)
+	protected function escapeInt($value)
 	{
 		if ($value === NULL)
 		{
@@ -551,7 +551,7 @@ class SafeMySQL
 		return $value;
 	}
 
-	private function escapeString($value)
+	protected function escapeString($value)
 	{
 		if ($value === NULL)
 		{
@@ -560,7 +560,7 @@ class SafeMySQL
 		return	"'".mysqli_real_escape_string($this->conn,$value)."'";
 	}
 
-	private function escapeIdent($value)
+	protected function escapeIdent($value)
 	{
 		if ($value)
 		{
@@ -570,7 +570,7 @@ class SafeMySQL
 		}
 	}
 
-	private function createIN($data)
+	protected function createIN($data)
 	{
 		if (!is_array($data))
 		{
@@ -590,7 +590,7 @@ class SafeMySQL
 		return $query;
 	}
 
-	private function createSET($data)
+	protected function createSET($data)
 	{
 		if (!is_array($data))
 		{
@@ -611,7 +611,7 @@ class SafeMySQL
 		return $query;
 	}
 
-	private function error($err)
+	protected function error($err)
 	{
 		$err  = __CLASS__.": ".$err;
 
@@ -624,7 +624,7 @@ class SafeMySQL
 		}
 	}
 
-	private function caller()
+	protected function caller()
 	{
 		$trace  = debug_backtrace();
 		$caller = '';
@@ -644,7 +644,7 @@ class SafeMySQL
 	 * On a long run we can eat up too much memory with mere statsistics
 	 * Let's keep it at reasonable size, leaving only last 100 entries.
 	 */
-	private function cutStats()
+	protected function cutStats()
 	{
 		if ( count($this->stats) > 100 )
 		{
